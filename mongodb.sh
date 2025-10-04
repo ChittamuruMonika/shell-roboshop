@@ -8,7 +8,7 @@ N="\e[0m"
 
 Log_Folder="/var/log/shell-roboshop" 
 Script_Name=$( echo $0 | cut -d "." -f1 )
-Log_File="$Log_File/$Script_Name.log"
+Log_File="$Log_Folder/$Script_Name.log"
 mkdir -p $Log_Folder
 
 if [ $USERID -ne 0 ]; then 
@@ -26,13 +26,13 @@ Validate() {
 }
 
 cp mongo.repo /etc/yum.repos.d/mongo.repo
-Validate $? "Adding Mongo repo"
+Validate $? "Adding Mongo repo" 
 
-dnf install mongodb-org -y 
+dnf install mongodb-org -y &>>$Log_File
 Validate $? "Installing Mongodb"
 
-systemctl enable mongod 
+systemctl enable mongod &>>$Log_File
 Validate $? "Enable Mongodb"
 
 systemctl start mongod 
-Validate $? "Install mongodb"
+Validate $? "Start mongodb"
