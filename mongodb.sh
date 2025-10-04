@@ -6,7 +6,7 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 
-Log_Folder="/var/log/shell-script" 
+Log_Folder="/var/log/shell-roboshop" 
 Script_Name=$( echo $0 | cut -d "." -f1 )
 Log_File="$Log_File/$Script_Name.log"
 mkdir -p $Log_Folder
@@ -26,13 +26,13 @@ Validate() {
 }
 
 cp mongo.repo /etc/yum.repos.d/mongo.repo
-validate $? "Adding Mongo repo"
+Validate $? "Adding Mongo repo"
 
 dnf install mongodb-org -y &>>$Log_Folder
-validate $? "Installing Mongodb"
+Validate $? "Installing Mongodb"
 
 systemctl enable mongod 
-validate $? "Enable Mongodb"
+Validate $? "Enable Mongodb"
 
 systemctl start mongod 
-validate $? "Install mongodb"
+Validate $? "Install mongodb"
