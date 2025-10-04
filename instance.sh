@@ -2,6 +2,8 @@
 
 ami_id="ami-09c813fb71547fc4f"
 sg_id="sg-047d12ce1fc8acf06"
+zone_id="Z1036407WU4VUDXG067Q"
+Domain_name="chikki.space"
 
 for instance in $@
 do 
@@ -9,8 +11,29 @@ do
 
     if [ $instance != "frontend" ]; then
         IP=$(aws ec2 describe-instances --instance-ids $instance_id --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text)
+        Record_name="$instance.$Domain_name"
     else
         IP=$(aws ec2 describe-instances --instance-ids $instance_id --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
+        Record_name="$Domain_name"
     fi
     echo "$instance : $IP"
+    aws route53 change-resource-record-sets \
+    --hosted-zone-id $zone_id \
+    --change-batch '
+    {
+        "Comment": "Testing creating a record set"
+        ,"Changes": [{
+        "Action"              : "UPSERT"
+        ,"ResourceRecordSet"  : {
+            "Name"              : "'$Record_name'"
+            ,"Type"             : "A"
+            ,"TTL"              : 1
+            ,"ResourceRecords"  : [{
+                "Value"         : "'" $IP "'"
+            }]
+        }
+        }]
+    }
+    '
+
 done
