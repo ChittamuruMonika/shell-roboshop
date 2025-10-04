@@ -28,7 +28,7 @@ Validate() {
 cp mongo.repo /etc/yum.repos.d/mongo.repo
 Validate $? "Adding Mongo repo"
 
-dnf install mongodb-org -y &>>$Log_Folder
+dnf install mongodb-org -y &>>$Log_File
 Validate $? "Installing Mongodb"
 
 systemctl enable mongod 
