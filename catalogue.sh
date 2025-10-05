@@ -8,8 +8,8 @@ N="\e[0m"
 
 Log_Folder="/var/log/shell-roboshop" 
 Script_Name=$( echo $0 | cut -d "." -f1 )
-Script_location=$pwd
-mongodb_ip="mongodb.chikki.space"
+Script_location=$PWD
+mongodb_ip=mongodb.chikki.space
 Log_File="$Log_Folder/$Script_Name.log"
 mkdir -p $Log_Folder
 
@@ -28,46 +28,46 @@ Validate() {
 }
 
 dnf module disable nodejs -y &>>$Log_File
-validate $? "disabling nodejs"
+Validate $? "disabling nodejs"
 
-dnf module enable nodejs:20 -y
-validate $? "Enabling nodejs"
+dnf module enable nodejs:20 -y &>>$Log_File
+Validate $? "Enabling nodejs"
 
 dnf install nodejs -y &>>$Log_File
-validate $? "Installing nodejs 20"
+Validate $? "Installing nodejs 20"
 
 useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop
-validate $? "Adding roboshop user"
+Validate $? "Adding roboshop user"
 mkdir -p /app 
-validate $? "creating app directory"
+Validate $? "creating app directory"
 curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip 
-validate $? "Downloading the code"
+Validate $? "Downloading the code"
 cd /app 
-validate $? "changing to app directory"
+Validate $? "changing to app directory"
 
 rm -rf /app/*
 unzip /tmp/catalogue.zip
-validate $? "Unzip the code"
+Validate $? "Unzip the code"
 npm install &>>$Log_File
-validate $? "Installing dependencies"
+Validate $? "Installing dependencies"
 
 cp $Script_location/catalogue.service /etc/systemd/system/catalogue.service
-validate $? "setting up catalogue service"
+Validate $? "setting up catalogue service"
 
 
 systemctl daemon-reload &>>$Log_File
-validate $? "daemon reload"
+Validate $? "daemon reload"
 systemctl enable catalogue &>>$Log_File
-validate $? "enabling catalogue"
+Validate $? "enabling catalogue"
 systemctl start catalogue &>>$Log_File
-validate $? "start catalogue"
+Validate $? "start catalogue"
 
 cp $Script_location/mongo.repo /etc/yum.repos.d/mongo.repo
-validate $? "copy mongodb repot"
+Validate $? "copy mongodb repot"
 dnf install mongodb-mongosh -y &>>$Log_File
-validate $? "Installing mongodb client"
+Validate $? "Installing mongodb client"
 mongosh --host $mongodb_ip </app/db/master-data.js &>>$Log_File
-validate $? "Load catalogue products"
+Validate $? "Load catalogue products"
 
-ystemctl restart catalogue &>>$Log_File
-validate $? "restart catalogue"
+systemctl restart catalogue &>>$Log_File
+Validate $? "restart catalogue"
