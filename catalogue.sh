@@ -63,7 +63,7 @@ Validate $? "setting up catalogue service"
 
 systemctl daemon-reload &>>$Log_File
 Validate $? "daemon reload"
-systemctl enable catalogue &>>$Log_File
+systemctl enable catalogue 
 Validate $? "enabling catalogue"
 systemctl start catalogue &>>$Log_File
 Validate $? "start catalogue"
